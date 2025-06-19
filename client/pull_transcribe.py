@@ -5,7 +5,7 @@ import subprocess
 import wave
 from vosk import Model, KaldiRecognizer
 
-SERVER = "http://yourserver.com/server"  # replace with real server URL
+SERVER = "https://ida.tw/interative/bell/server"  # replace with real server URL
 AUDIO_DIR = "downloaded_audio"
 TRANS_FILE = "transcripts.json"
 MODEL_PATH = "model"  # path to Vosk model
