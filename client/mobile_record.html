@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Record Audio</title>
+</head>
+<body>
+  <button id="record">Record</button>
+  <button id="stop" disabled>Stop</button>
+  <script>
+    let mediaRecorder;
+    let chunks = [];
+    document.getElementById('record').onclick = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = e => chunks.push(e.data);
+      mediaRecorder.onstop = handleStop;
+      mediaRecorder.start();
+      chunks = [];
+      document.getElementById('record').disabled = true;
+      document.getElementById('stop').disabled = false;
+    };
+    document.getElementById('stop').onclick = () => {
+      mediaRecorder.stop();
+      document.getElementById('record').disabled = false;
+      document.getElementById('stop').disabled = true;
+    };
+    function upload(blob){
+      const formData = new FormData();
+      formData.append('audio', blob, 'recording.webm');
+      fetch('../server/upload.php', { method: 'POST', body: formData });
+    }
+    function handleStop(){
+      const blob = new Blob(chunks, { type: 'audio/webm' });
+      upload(blob);
+    }
+  </script>
+</body>
+</html>

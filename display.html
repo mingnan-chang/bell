@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>3D Text Drop</title>
+<style>body{margin:0;overflow:hidden;}</style>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/three@0.154/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.154/examples/jsm/loaders/FontLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.154/examples/jsm/geometries/TextGeometry.js"></script>
+<script>
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+function drop(mesh){
+  function animate(){
+    mesh.position.y -= 0.05;
+    if(mesh.position.y>-10) requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+const loader = new THREE.FontLoader();
+loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', font => {
+  fetch('transcripts.json').then(r=>r.json()).then(data=>{
+    let y = 5;
+    data.forEach(item=>{
+      const geo = new THREE.TextGeometry(item.text || '',{font,size:0.5,height:0.1});
+      const mat = new THREE.MeshBasicMaterial({color:0xff6600});
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(-2,y,0);
+      scene.add(mesh);
+      drop(mesh);
+      y += 1.5;
+    });
+  });
+});
+
+camera.position.z = 5;
+(function animate(){
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+})();
+</script>
+</body>
+</html>
